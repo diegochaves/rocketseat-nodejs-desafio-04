@@ -1,0 +1,229 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Atlas",
+    "description": "Essa é uma documentação sobre a Atlas API",
+    "version": "1.0.0",
+    "contact": {
+      "email": "dfchaves@gmail.com",
+      "name": "Diego Chaves"
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create a user",
+        "description": "Create a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "example": {
+                  "name": "Fulano de Tal",
+                  "email": "fulano@teste.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "get": {
+        "tags": ["User"],
+        "summary": "List all users",
+        "description": "List all users",
+        "parameters": [{
+          "name": "user_id",
+          "in": "header",
+          "description": "user_id from authenticated user",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/uuid"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Usuário inexistente ou não Administrador!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/:user_id": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Show User Profile",
+        "description": "Show User Profile",
+        "parameters": [{
+          "name": "user_id",
+          "in": "query",
+          "description": "id from user that u want the profile from",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/uuid"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Usuário inexistente!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/:user_id/admin": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Convert to Admin",
+        "description": "Convert the user permissions to Admin",
+        "parameters": [{
+          "name": "user_id",
+          "in": "query",
+          "description": "id from user that u want to convert to admin",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/uuid"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Usuário inexistente!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "user": {
+        "type": "object",
+        "required": ["id", "name", "email", "admin"],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Fulano de Tal"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "fulano@email.com"
+          },
+          "admin": {
+            "type": "boolean",
+            "example": false
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/date-time"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/date-time"
+
+          }
+        }
+      },
+      "uuid": {
+        "type": "string",
+        "format": "uuid",
+        "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+      },
+      "date-time": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2021-09-20T02:00:00.003Z"
+      }
+    }
+  }
+}
